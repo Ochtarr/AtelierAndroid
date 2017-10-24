@@ -4,6 +4,8 @@
     <string name="btClient">Client</string>
     <string name="btServer">Server</string>
     <string name="btDownload">Download this file</string>
+    <string name="btStart">Start</string>
+    <string name="btStop">Stop</string>
 
     <string name="lblChooseYourRole">Choose your role</string>
     <string name="lblResult">Result</string>
