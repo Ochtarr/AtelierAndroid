@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fac.appandroid.Server">
+    tools:context="fac.appandroid.Server"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
 
     <Button
         android:id="@+id/btDownload"
@@ -13,37 +15,40 @@
         android:text="@string/btDownload"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="7dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/txtURL" />
+        app:layout_constraintTop_toBottomOf="@+id/txtURL"
+        app:layout_constraintHorizontal_bias="0.504" />
 
     <ProgressBar
         android:id="@+id/pbDownload"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="108dp"
-        android:layout_height="45dp"
+        android:layout_width="284dp"
+        android:layout_height="39dp"
         android:max="100"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="7dp"
-        app:layout_constraintTop_toBottomOf="@+id/txtURL"
-        app:layout_constraintRight_toLeftOf="@+id/btDownload"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/btDownload"
         android:layout_marginRight="8dp"
-        tools:layout_editor_absoluteX="95dp" />
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <TextView
         android:id="@+id/lblURL"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/lblURL"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/txtURL"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintHorizontal_bias="0.543"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <EditText
         android:id="@+id/txtURL"
@@ -51,9 +56,11 @@
         android:layout_height="49dp"
         android:ems="10"
         android:inputType="textUri"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/lblURL" />
 
 </android.support.constraint.ConstraintLayout>

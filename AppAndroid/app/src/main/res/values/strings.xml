@@ -8,5 +8,5 @@
     <string name="lblChooseYourRole">Choose your role</string>
     <string name="lblResult">Result</string>
     <string name="lblURL">URL</string>
-
+    <string name="lblBluetoothDevices">Bluetooth devices</string>
 </resources>

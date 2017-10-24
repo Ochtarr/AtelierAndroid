@@ -1,5 +1,8 @@
 package fac.appandroid;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,12 +13,17 @@ import android.widget.ProgressBar;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.UUID;
 
 public class Server extends AppCompatActivity {
+
+    public final UUID MY_UUID = UUID.randomUUID();
+    public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     private Button btDownload;
     private ProgressBar pbDownload;
@@ -27,7 +35,6 @@ public class Server extends AppCompatActivity {
 
         btDownload = (Button) findViewById(R.id.btDownload);
         pbDownload = (ProgressBar) findViewById(R.id.pbDownload);
-
 
         onClickBtDownload();
     }
@@ -47,9 +54,43 @@ public class Server extends AppCompatActivity {
         });
     }
 
-    private class DownloadFileFromURL extends AsyncTask<String, String, String> {
+    private class AcceptThread extends Thread {
+        private BluetoothServerSocket mmServerSocket;
 
-        //ProgressBar pbDownload;
+        public AcceptThread() {
+            BluetoothServerSocket tmp = null;
+            try {
+                tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord("name", MY_UUID);
+            } catch (IOException e) { }
+            mmServerSocket = tmp;
+        }
+
+        public void run() {
+            BluetoothSocket socket = null;
+            while (true) {
+                try {
+                    socket = mmServerSocket.accept();
+                } catch (IOException e) {
+                    //mmServerSocket.close();
+                    break;
+                }
+
+                if (socket != null) {
+                    //manageConnectedSocket(socket);
+
+                    break;
+                }
+            }
+        }
+
+        public void cancel() {
+            try {
+                mmServerSocket.close();
+            } catch (IOException e) { }
+        }
+    }
+
+    private class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
         protected void onPreExecute() {
             super.onPreExecute();
