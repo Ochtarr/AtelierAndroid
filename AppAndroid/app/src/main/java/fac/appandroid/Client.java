@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +27,15 @@ import java.util.UUID;
 public class Client extends AppCompatActivity {
 
     public final UUID MY_UUID = UUID.randomUUID();
+
+    //for log
+    private static final String TAG = "ClientActivity";
+
+    //for save user preferences
+    private SharedPreferences userPrefOnClient;
+    public static final String prefName = "ClientPreferences";
+
+    //for bluetooth
     public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private Set<BluetoothDevice> devices;
     private List<String> devicesTxt = new ArrayList<String>();
@@ -35,6 +46,7 @@ public class Client extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
 
@@ -64,10 +76,63 @@ public class Client extends AppCompatActivity {
             Thread thread = new ConnectThread(device);
             thread.start();*/
         }
+
+        userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        //Set<String> listDevicesSaved = userPrefOnClient.getStringSet("listBluetoohDevices", null);
+
     }
 
     @Override
-    public void onStop() {
+    protected void onResume()
+    {
+        Log.d(TAG, "onResume");
+        super.onResume();
+        if (mBluetoothAdapter == null)
+        {
+            btStart.setEnabled(false);
+            btStop.setEnabled(false);
+        }
+        else
+        {
+            btStart.setEnabled(true);
+            btStop.setEnabled(false);
+            setBluetooth(true);
+            onClickBtStart();
+            onClickBtStop();
+        }
+        userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
+    }
+
+    @Override
+    protected void onRestart()
+    {
+        Log.d(TAG, "onRestart");
+        super.onRestart();
+        if (mBluetoothAdapter == null)
+        {
+            btStart.setEnabled(false);
+            btStop.setEnabled(false);
+        }
+        else
+        {
+            btStart.setEnabled(true);
+            btStop.setEnabled(false);
+            setBluetooth(true);
+            onClickBtStart();
+            onClickBtStop();
+        }
+        userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
+    }
+
+    @Override
+    protected void onPause(){
+        Log.d(TAG, "onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop");
         super.onStop();
 
         if (mBluetoothAdapter != null)
@@ -78,6 +143,7 @@ public class Client extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
 
         try {
@@ -136,7 +202,9 @@ public class Client extends AppCompatActivity {
                 String txtDevice = device.getName() + " - " + device.getAddress();
                 Toast.makeText(getApplicationContext(), txtDevice, Toast.LENGTH_SHORT).show();
 
+                devices.add(device);
                 devicesTxt.add(txtDevice);
+
                 final ArrayAdapter<String> adapter = new ArrayAdapter<String>(Client.this, android.R.layout.simple_list_item_1, devicesTxt);
                 listDevices.setAdapter(adapter);
             }
