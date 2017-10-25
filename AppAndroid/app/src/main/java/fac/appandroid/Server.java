@@ -3,6 +3,8 @@ package fac.appandroid;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,14 +25,19 @@ import java.util.UUID;
 
 public class Server extends AppCompatActivity {
 
+    //for log
+    private static final String TAG = "ServerActivity";
+
+    //for save user preferences
+    private SharedPreferences userPrefOnServer;
+    public static final String prefName = "ServerPreferences";
+
     public final UUID MY_UUID = UUID.randomUUID();
     public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     private Button btDownload;
     private ProgressBar pbDownload;
     private TextView txtURL;
-
-    private static final String TAG = "ServerActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,9 @@ public class Server extends AppCompatActivity {
         pbDownload = (ProgressBar) findViewById(R.id.pbDownload);
         txtURL = (TextView) findViewById(R.id.txtURL);
 
+        userPrefOnServer = getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        txtURL.setText(userPrefOnServer.getString("url", ""));
+
         onClickBtDownload();
     }
 
@@ -49,17 +59,24 @@ public class Server extends AppCompatActivity {
     protected void onResume(){
         Log.d(TAG, "onResume");
         super.onResume();
+        userPrefOnServer = getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        txtURL.setText(userPrefOnServer.getString("url", ""));
     }
 
     @Override
     protected void onRestart(){
         Log.d(TAG, "onRestart");
         super.onRestart();
+        userPrefOnServer = getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        txtURL.setText(userPrefOnServer.getString("url", ""));
     }
 
     @Override
     protected void onPause(){
         Log.d(TAG, "onPause");
+        SharedPreferences.Editor ed = userPrefOnServer.edit();
+        ed.putString("url", txtURL.getText().toString());
+        ed.commit();
         super.onPause();
     }
 
