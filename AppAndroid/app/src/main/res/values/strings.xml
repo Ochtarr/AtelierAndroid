@@ -1,14 +1,26 @@
 <resources>
     <string name="app_name">Application</string>
 
+    <!-- Main Activity -->
+    <string name="lblChooseYourRole">Choose your role</string>
     <string name="btClient">Client</string>
     <string name="btServer">Server</string>
-    <string name="btDownload">Download this file</string>
+    <string name="btSettings">Settings</string>
+
+    <!-- Client & Server Activity -->
+    <string name="lblBluetoothDevices">Bluetooth devices</string>
+
+    <!-- Client Activity -->
     <string name="btStart">Start</string>
     <string name="btStop">Stop</string>
 
-    <string name="lblChooseYourRole">Choose your role</string>
+    <!-- Server Activity -->
+    <string name="btDownload">Download this file</string>
     <string name="lblResult">Result</string>
     <string name="lblURL">URL</string>
-    <string name="lblBluetoothDevices">Bluetooth devices</string>
+
+    <!-- Settings Activity -->
+    <string name="lblSettingsAllowWifiConnect">Allow WI-FI connection</string>
+    <string name="lblSettingsAllowBluetoothConnect">Allow Bluetooth connection</string>
+
 </resources>

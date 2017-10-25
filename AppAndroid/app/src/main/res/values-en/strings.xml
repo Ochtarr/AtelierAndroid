@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Application</string>
+    <string name="btClient">Client</string>
+    <string name="btDownload">Download this file</string>
+    <string name="btServer">Server</string>
+    <string name="btSettings">Settings</string>
+    <string name="btStart">Start</string>
+    <string name="btStop">Stop</string>
+    <string name="lblBluetoothDevices">Bluetooth devices</string>
+    <string name="lblChooseYourRole">Choose your role</string>
+    <string name="lblResult">Result</string>
+    <string name="lblSettingsAllowBluetoothConnect">Allow Bluetooth connection</string>
+    <string name="lblSettingsAllowWifiConnect">Allow WI-FI connection</string>
+    <string name="lblURL">URL</string>
+</resources>
