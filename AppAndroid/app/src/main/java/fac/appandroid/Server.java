@@ -30,8 +30,11 @@ public class Server extends AppCompatActivity {
     private ProgressBar pbDownload;
     private TextView txtURL;
 
+    private static final String TAG = "ServerActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server);
 
@@ -42,11 +45,41 @@ public class Server extends AppCompatActivity {
         onClickBtDownload();
     }
 
+    @Override
+    protected void onResume(){
+        Log.d(TAG, "onResume");
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestart(){
+        Log.d(TAG, "onRestart");
+        super.onRestart();
+    }
+
+    @Override
+    protected void onPause(){
+        Log.d(TAG, "onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop(){
+        Log.d(TAG, "onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy(){
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+    }
+
     private void onClickBtDownload() {
         btDownload.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Log.d("DEBUG", "bt download");
+                Log.d(TAG, "bt download");
 
                 pbDownload.setProgress(0);
 
@@ -146,7 +179,7 @@ public class Server extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(String file_url) {
-            Log.i("DEBUG", "dl finish !");
+            Log.i(TAG, "dl finish !");
         }
     }
 }
