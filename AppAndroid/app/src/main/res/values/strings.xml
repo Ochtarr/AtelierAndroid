@@ -1,10 +1,12 @@
 <resources>
-    <string name="app_name">Application</string>
+    <string name="app_name">ShareVideo</string>
 
     <!-- Main Activity -->
     <string name="lblChooseYourRole">Choose your role</string>
     <string name="btClient">Client</string>
     <string name="btServer">Server</string>
+    <string name="btClientWifi">Client Wifi</string>
+    <string name="btServerWifi">Server Wifi</string>
     <string name="btSettings">Settings</string>
 
     <!-- Client & Server Activity -->
@@ -19,6 +21,15 @@
     <string name="btDownload">Download this file</string>
     <string name="lblResult">Result</string>
     <string name="lblURL">URL</string>
+
+    <!-- Client Wifi Activity -->
+    <string name="btStartWifi">Start</string>
+    <string name="btStopWifi">Stop</string>
+
+    <!-- Server Wifi Activity -->
+    <string name="btDownloadWifi">Download this file</string>
+    <string name="lblResultWifi">Result</string>
+    <string name="lblURLWifi">URL</string>
 
     <!-- Settings Activity -->
     <string name="lblSettingsAllowWifiConnect">Allow WI-FI connection</string>

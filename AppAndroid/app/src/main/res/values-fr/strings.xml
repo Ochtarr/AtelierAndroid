@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Application</string>
+    <string name="app_name">Partage tes vidéos</string>
     <string name="btClient">Client</string>
     <string name="btDownload">Télécharger le fichier</string>
     <string name="btServer">Serveur</string>

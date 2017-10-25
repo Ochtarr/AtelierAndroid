@@ -13,6 +13,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btServer;
     private Button btClient;
+    private Button btServerWifi;
+    private Button btClientWifi;
     private Button btSettings;
 
     @Override
@@ -23,10 +25,14 @@ public class MainActivity extends AppCompatActivity {
 
         btClient = (Button) findViewById(R.id.btClient);
         btServer = (Button) findViewById(R.id.btServer);
+        btClientWifi = (Button) findViewById(R.id.btClientWifi);
+        btServerWifi = (Button) findViewById(R.id.btServerWifi);
         btSettings = (Button) findViewById(R.id.btSettings);
 
         onClickBtClient();
         onClickBtServer();
+        onClickBtClientWifi();
+        onClickBtServerWifi();
         onClickBtSettings();
     }
 
@@ -83,6 +89,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(MainActivity.this, Server.class);
+                MainActivity.this.startActivity(myIntent);
+            }
+        });
+    }
+
+    private void onClickBtClientWifi() {
+        btClientWifi.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(MainActivity.this, ClientWifi.class);
+                MainActivity.this.startActivity(myIntent);
+            }
+        });
+    }
+
+    private void onClickBtServerWifi() {
+        btServerWifi.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(MainActivity.this, ServerWifi.class);
                 MainActivity.this.startActivity(myIntent);
             }
         });
