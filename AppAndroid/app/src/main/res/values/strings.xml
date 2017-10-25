@@ -13,6 +13,7 @@
     <!-- Client Activity -->
     <string name="btStart">Start</string>
     <string name="btStop">Stop</string>
+    <string name="btSend">Send</string>
 
     <!-- Server Activity -->
     <string name="btDownload">Download this file</string>

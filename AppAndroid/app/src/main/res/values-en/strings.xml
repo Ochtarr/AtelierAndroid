@@ -7,6 +7,7 @@
     <string name="btSettings">Settings</string>
     <string name="btStart">Start</string>
     <string name="btStop">Stop</string>
+    <string name="btSend">Send</string>
     <string name="lblBluetoothDevices">Bluetooth devices</string>
     <string name="lblChooseYourRole">Choose your role</string>
     <string name="lblResult">Result</string>

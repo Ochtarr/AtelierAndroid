@@ -7,6 +7,7 @@
     <string name="btSettings">Paramètres</string>
     <string name="btStart">Démarrer</string>
     <string name="btStop">Arrêter</string>
+    <string name="btSend">Envoyer</string>
     <string name="lblBluetoothDevices">Appareils Bluetooth</string>
     <string name="lblChooseYourRole">Choisissez votre rôle</string>
     <string name="lblResult">Résultats</string>

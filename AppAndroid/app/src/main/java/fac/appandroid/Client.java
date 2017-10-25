@@ -2,12 +2,13 @@ package fac.appandroid;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +19,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,14 +35,30 @@ public class Client extends AppCompatActivity {
     private SharedPreferences userPrefOnClient;
     public static final String prefName = "ClientPreferences";
 
+    // Message types sent from the BluetoothService Handler
+    public static final int MESSAGE_STATE_CHANGE = 1;
+    public static final int MESSAGE_READ = 2;
+    public static final int MESSAGE_WRITE = 3;
+    public static final int MESSAGE_DEVICE_NAME = 4;
+    public static final int MESSAGE_TOAST = 5;
+
+
+    // Key names received from the BluetoothChatService Handler
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+
     //for bluetooth
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private Set<BluetoothDevice> devices;
     private List<String> devicesTxt = new ArrayList<String>();
+    private StringBuffer mOutStringBuffer;
+
+    private BluetoothService mService = null;
 
     private ListView listDevices;
     private Button btStart;
     private Button btStop;
+    private Button btSend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +69,13 @@ public class Client extends AppCompatActivity {
         listDevices = (ListView) findViewById(R.id.listDevices);
         btStart = (Button) findViewById(R.id.btStart);
         btStop = (Button) findViewById(R.id.btStop);
+        btSend = (Button) findViewById(R.id.btSend);
 
         initBluetooth();
 
         onClickBtStart();
         onClickBtStop();
+        onClickBtSend();
         onClickListDevice();
 
         userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
@@ -74,8 +92,7 @@ public class Client extends AppCompatActivity {
                 Log.d(TAG, "onClickListDevice - " + myDevice.get(i).getName());
 
                 BluetoothDevice device = myDevice.get(i);
-                Thread thread = new ConnectThread(device);
-                thread.start();
+                mService.connect(device);
             }
         });
     }
@@ -85,14 +102,48 @@ public class Client extends AppCompatActivity {
         {
             btStart.setEnabled(false);
             btStop.setEnabled(false);
+            btSend.setEnabled(false);
         }
         else
         {
             btStart.setEnabled(true);
             btStop.setEnabled(false);
+            btSend.setEnabled(false);
+
             setBluetooth(true);
+            Log.d(TAG, "initBluetooth");
+            mService = new BluetoothService(this, mHandler);
+            mOutStringBuffer = new StringBuffer("");
         }
     }
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    Toast.makeText(getApplicationContext(), writeMessage, Toast.LENGTH_SHORT).show();
+                    break;
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
+                    break;
+                case MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    Toast.makeText(getApplicationContext(), "Connected to " + msg.getData().getString(DEVICE_NAME), Toast.LENGTH_SHORT).show();
+                    btSend.setEnabled(true);
+                    break;
+                case MESSAGE_TOAST:
+                    Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST), Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onResume()
@@ -137,11 +188,35 @@ public class Client extends AppCompatActivity {
         try {
             btStart.setEnabled(true);
             btStop.setEnabled(false);
+            btSend.setEnabled(false);
 
             unregisterReceiver(mReceiver);
         } catch (Exception e){
 
         }
+    }
+
+    private void onClickBtSend() {
+        btSend.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClickBtSend");
+                // Check that we're actually connected before trying anything
+                if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+                    Toast.makeText(Client.this, "not connected", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String message = "bonjour";
+
+                if (message.length() > 0) {
+                    // Get the message bytes and tell the BluetoothChatService to write
+                    byte[] send = message.getBytes();
+                    mService.write(send);
+                    mOutStringBuffer.setLength(0);
+                }
+            }
+        });
     }
 
     private void onClickBtStart() {
@@ -230,55 +305,4 @@ public class Client extends AppCompatActivity {
         }
     }
 
-//    public void setVisible() {
-//        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-//        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-//        startActivity(discoverableIntent);
-//    }
-
-    private class ConnectThread extends Thread {
-        private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
-
-        public ConnectThread(BluetoothDevice device) {
-            BluetoothSocket tmp = null;
-            mmDevice = device;
-            try {
-                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-            } catch (IOException e) { }
-            mmSocket = tmp;
-        }
-
-        public void run() {
-            mBluetoothAdapter.cancelDiscovery();
-            try {
-                mmSocket.connect();
-
-                manageConnectedSocket(mmSocket);
-            } catch (IOException connectException) {
-                try {
-                    mmSocket.close();
-                } catch (IOException closeException) { }
-                return;
-            }
-        }
-
-        public void manageConnectedSocket(BluetoothSocket device) {
-            /*
-                    while (1) tant qu'on veut rester connecté
-             */
-            try {
-                Thread.sleep(5000);
-            }
-            catch (InterruptedException exception) {
-                exception.printStackTrace();
-            }
-        }
-
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) { }
-        }
-    }
 }
