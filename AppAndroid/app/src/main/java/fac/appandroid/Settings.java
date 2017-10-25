@@ -13,7 +13,7 @@ public class Settings extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
 
     private ConnectivityManager connMgr;
-    private NetworkInfo infoWIFI;
+    private NetworkInfo infosConnection;
     private NetworkInfo infoBluetooth;
     private boolean isWifiConn;
     private boolean isMobileConn;
@@ -25,14 +25,11 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        infoWIFI = connMgr.getActiveNetworkInfo();
+        Log.d(TAG, "connMgr OK");
+        infosConnection = connMgr.getActiveNetworkInfo();
+        Log.d(TAG, "infoWifi OK");
 
-        isWifiConn = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
-        isMobileConn = connMgr.getNetworkInfo(ConnectivityManager.TYPE_BLUETOOTH).isConnectedOrConnecting();
-
-        Log.d(TAG, "infoConnections:" + infoWIFI.toString());
-        Log.d(TAG, "Wifi connected: " + isWifiConn);
-        Log.d(TAG, "Mobile connected: " + isMobileConn);
+        Log.d(TAG, "infoConnections:" + infosConnection.toString());
     }
 
     @Override
