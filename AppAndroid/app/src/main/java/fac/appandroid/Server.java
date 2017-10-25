@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -42,6 +43,15 @@ public class Server extends AppCompatActivity {
     private ProgressBar pbDownload;
     private TextView txtURL;
 
+    private AcceptThread mSecureAcceptThread;
+    private int mState;
+
+    // Constants that indicate the current connection state
+    public static final int STATE_NONE = 0;       // we're doing nothing
+    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
+    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
+    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -57,28 +67,49 @@ public class Server extends AppCompatActivity {
 
         onClickBtDownload();
 
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        boolean isWifiConn = networkInfo.isConnected();
-        networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        boolean isMobileConn = networkInfo.isConnected();
-        Log.d(TAG, "Wifi connected: " + isWifiConn);
-        Log.d(TAG, "Mobile connected: " + isMobileConn);
+        if (mBluetoothAdapter != null)
+        {
+            setVisible(); //Bluetooth visible
 
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException exception) {
+                exception.printStackTrace();
+            }
 
+            setBluetooth(true); //Bluetooth enable
 
-//        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-//        if (isConnected == true) {
-//            Toast.makeText(this, "connected", Toast.LENGTH_SHORT).show();
-//        }
-//        else
-//        {
-//            Toast.makeText(this, "not conencted", Toast.LENGTH_SHORT).show();
-//        }
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException exception) {
+                exception.printStackTrace();
+            }
 
+            mSecureAcceptThread = new AcceptThread(true);
+            mSecureAcceptThread.start();
+        }
+    }
+
+    private void setBluetooth(boolean enable) {
+        boolean isEnabled = mBluetoothAdapter.isEnabled();
+
+        if (enable && !isEnabled) {
+            mBluetoothAdapter.enable();
+        }
+        else if(!enable && isEnabled) {
+            mBluetoothAdapter.disable();
+        }
+        else if(enable && isEnabled) {
+            Log.d(TAG, "setBluetooth - Bluetooth déja actif");
+        }
+    }
+
+    private void setVisible() {
+        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        startActivity(discoverableIntent);
     }
 
     @Override
@@ -133,38 +164,82 @@ public class Server extends AppCompatActivity {
     }
 
     private class AcceptThread extends Thread {
-        private BluetoothServerSocket mmServerSocket;
+        // The local server socket
+        private final BluetoothServerSocket mmServerSocket;
+        private String mSocketType;
 
-        public AcceptThread() {
+        public AcceptThread(boolean secure) {
             BluetoothServerSocket tmp = null;
+            mSocketType = secure ? "Secure" : "Insecure";
+
+            // Create a new listening server socket
             try {
-                tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord("name", MY_UUID);
-            } catch (IOException e) { }
+                if (secure) {
+                    tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord("Name", MY_UUID);
+                } else {
+                    tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Name", MY_UUID);
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "Socket Type: " + mSocketType + "listen() failed", e);
+            }
             mmServerSocket = tmp;
+            mState = STATE_LISTEN;
         }
 
         public void run() {
+            Log.d(TAG, "Socket Type: " + mSocketType +
+                    "BEGIN mAcceptThread" + this);
+            setName("AcceptThread" + mSocketType);
+
             BluetoothSocket socket = null;
-            while (true) {
+
+            // Listen to the server socket if we're not connected
+            while (mState != STATE_CONNECTED) {
                 try {
+                    // This is a blocking call and will only return on a
+                    // successful connection or an exception
                     socket = mmServerSocket.accept();
                 } catch (IOException e) {
-                    //mmServerSocket.close();
+                    Log.e(TAG, "Socket Type: " + mSocketType + "accept() failed", e);
                     break;
                 }
 
+                // If a connection was accepted
                 if (socket != null) {
-                    //manageConnectedSocket(socket);
+                    synchronized (Server.this) {
+                        switch (mState) {
+                            case STATE_LISTEN:
+                            case STATE_CONNECTING:
+                                // Situation normal. Start the connected thread.
+                                /*connected(socket, socket.getRemoteDevice(),
+                                        mSocketType);*/
+                                Log.d(TAG, "situation normale");
 
-                    break;
+                                break;
+                            case STATE_NONE:
+                            case STATE_CONNECTED:
+                                // Either not ready or already connected. Terminate new socket.
+                                try {
+                                    socket.close();
+                                } catch (IOException e) {
+                                    Log.e(TAG, "Could not close unwanted socket", e);
+                                }
+                                break;
+                        }
+                    }
                 }
             }
+            Log.i(TAG, "END mAcceptThread, socket Type: " + mSocketType);
+
         }
 
         public void cancel() {
+            Log.d(TAG, "Socket Type" + mSocketType + "cancel " + this);
             try {
                 mmServerSocket.close();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+                Log.e(TAG, "Socket Type" + mSocketType + "close() of server failed", e);
+            }
         }
     }
 

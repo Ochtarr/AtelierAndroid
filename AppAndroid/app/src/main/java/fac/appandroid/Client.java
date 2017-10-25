@@ -8,11 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -36,7 +36,7 @@ public class Client extends AppCompatActivity {
     public static final String prefName = "ClientPreferences";
 
     //for bluetooth
-    public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private Set<BluetoothDevice> devices;
     private List<String> devicesTxt = new ArrayList<String>();
 
@@ -54,6 +54,33 @@ public class Client extends AppCompatActivity {
         btStart = (Button) findViewById(R.id.btStart);
         btStop = (Button) findViewById(R.id.btStop);
 
+        initBluetooth();
+
+        onClickBtStart();
+        onClickBtStop();
+        onClickListDevice();
+
+        userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        //Set<String> listDevicesSaved = userPrefOnClient.getStringSet("listBluetoohDevices", null);
+
+    }
+
+    private void onClickListDevice() {
+        listDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                List<BluetoothDevice> myDevice = new ArrayList<>(devices);
+                Log.d(TAG, "onClickListDevice - " + myDevice.get(i).getName());
+
+                BluetoothDevice device = myDevice.get(i);
+                Thread thread = new ConnectThread(device);
+                thread.start();
+            }
+        });
+    }
+
+    private void initBluetooth() {
         if (mBluetoothAdapter == null)
         {
             btStart.setEnabled(false);
@@ -63,23 +90,8 @@ public class Client extends AppCompatActivity {
         {
             btStart.setEnabled(true);
             btStop.setEnabled(false);
-
             setBluetooth(true);
-
-            onClickBtStart();
-            onClickBtStop();
-
-            //setVisible();
-
-            //quand on a choisis dans la liste des device .. on fait ça ? :
-            /*BluetoothDevice device = null;
-            Thread thread = new ConnectThread(device);
-            thread.start();*/
         }
-
-        userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
-        //Set<String> listDevicesSaved = userPrefOnClient.getStringSet("listBluetoohDevices", null);
-
     }
 
     @Override
@@ -87,19 +99,7 @@ public class Client extends AppCompatActivity {
     {
         Log.d(TAG, "onResume");
         super.onResume();
-        if (mBluetoothAdapter == null)
-        {
-            btStart.setEnabled(false);
-            btStop.setEnabled(false);
-        }
-        else
-        {
-            btStart.setEnabled(true);
-            btStop.setEnabled(false);
-            setBluetooth(true);
-            onClickBtStart();
-            onClickBtStop();
-        }
+        initBluetooth();
         userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
     }
 
@@ -108,19 +108,7 @@ public class Client extends AppCompatActivity {
     {
         Log.d(TAG, "onRestart");
         super.onRestart();
-        if (mBluetoothAdapter == null)
-        {
-            btStart.setEnabled(false);
-            btStop.setEnabled(false);
-        }
-        else
-        {
-            btStart.setEnabled(true);
-            btStop.setEnabled(false);
-            setBluetooth(true);
-            onClickBtStart();
-            onClickBtStop();
-        }
+        initBluetooth();
         userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
     }
 
@@ -160,6 +148,7 @@ public class Client extends AppCompatActivity {
         btStart.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "onClickBtStart");
                 listAllDevices(); //list All devices
 
                 IntentFilter filter = new IntentFilter();
@@ -178,6 +167,7 @@ public class Client extends AppCompatActivity {
         btStop.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "onClickBtStop");
                 if (mBluetoothAdapter.isDiscovering()) {
                     mBluetoothAdapter.cancelDiscovery();
                 }
@@ -192,28 +182,28 @@ public class Client extends AppCompatActivity {
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 btStart.setEnabled(false);
                 btStop.setEnabled(true); }
-            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStart.setEnabled(true);
                 btStop.setEnabled(false); }
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+            else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
                 BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
                 String txtDevice = device.getName() + " - " + device.getAddress();
                 Toast.makeText(getApplicationContext(), txtDevice, Toast.LENGTH_SHORT).show();
 
-                devices.add(device);
+                //devices.add(device);
                 devicesTxt.add(txtDevice);
 
                 final ArrayAdapter<String> adapter = new ArrayAdapter<String>(Client.this, android.R.layout.simple_list_item_1, devicesTxt);
                 listDevices.setAdapter(adapter);
-            }
 
-            //Toast.makeText(getApplicationContext(), BluetoothDevice., Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "BroadcastReceiver - Detect " + txtDevice);
+            }
         }
     };
 
-    public void listAllDevices() {
+    private void listAllDevices() {
         devicesTxt.clear();
         devices = mBluetoothAdapter.getBondedDevices();
 
@@ -226,7 +216,7 @@ public class Client extends AppCompatActivity {
         listDevices.setAdapter(adapter);
     }
 
-    public void setBluetooth(boolean enable) {
+    private void setBluetooth(boolean enable) {
         boolean isEnabled = mBluetoothAdapter.isEnabled();
 
         if (enable && !isEnabled) {
@@ -236,7 +226,7 @@ public class Client extends AppCompatActivity {
             mBluetoothAdapter.disable();
         }
         else if(enable && isEnabled) {
-            Log.i("DEBUG", "Bluetooth déja actif");
+            Log.d(TAG, "setBluetooth - Bluetooth déja actif");
         }
     }
 
@@ -263,13 +253,26 @@ public class Client extends AppCompatActivity {
             mBluetoothAdapter.cancelDiscovery();
             try {
                 mmSocket.connect();
+
+                manageConnectedSocket(mmSocket);
             } catch (IOException connectException) {
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) { }
                 return;
             }
-            //manageConnectedSocket(mmSocket);
+        }
+
+        public void manageConnectedSocket(BluetoothSocket device) {
+            /*
+                    while (1) tant qu'on veut rester connecté
+             */
+            try {
+                Thread.sleep(5000);
+            }
+            catch (InterruptedException exception) {
+                exception.printStackTrace();
+            }
         }
 
         public void cancel() {
