@@ -84,10 +84,6 @@ public class Client extends AppCompatActivity {
             btStart.setEnabled(true);
             btStop.setEnabled(false);
 
-            if (mBluetoothAdapter.isDiscovering()) {
-                mBluetoothAdapter.cancelDiscovery();
-            }
-
             unregisterReceiver(mReceiver);
         } catch (Exception e){
 
@@ -116,7 +112,9 @@ public class Client extends AppCompatActivity {
         btStop.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                onDestroy();
+                if (mBluetoothAdapter.isDiscovering()) {
+                    mBluetoothAdapter.cancelDiscovery();
+                }
             }
         });
     }
@@ -127,22 +125,23 @@ public class Client extends AppCompatActivity {
 
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 btStart.setEnabled(false);
-                btStop.setEnabled(true);
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                btStop.setEnabled(true); }
+            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 btStart.setEnabled(true);
-                btStop.setEnabled(false);
-                onDestroy();
-            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                btStop.setEnabled(false); }
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
                 BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
                 String txtDevice = device.getName() + " - " + device.getAddress();
                 Toast.makeText(getApplicationContext(), txtDevice, Toast.LENGTH_SHORT).show();
-                devicesTxt.add(txtDevice);
 
+                devicesTxt.add(txtDevice);
                 final ArrayAdapter<String> adapter = new ArrayAdapter<String>(Client.this, android.R.layout.simple_list_item_1, devicesTxt);
                 listDevices.setAdapter(adapter);
             }
+
+            //Toast.makeText(getApplicationContext(), BluetoothDevice., Toast.LENGTH_SHORT).show();
         }
     };
 
