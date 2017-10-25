@@ -104,6 +104,7 @@ public class Server extends AppCompatActivity {
             }
 
             mService = new BluetoothService(this, mHandler);
+            mService.start();
 
 //            mSecureAcceptThread = new AcceptThread(true);
 //            mSecureAcceptThread.start();
@@ -134,6 +135,8 @@ public class Server extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST), Toast.LENGTH_SHORT).show();
                     break;
             }
+
+            Log.d(TAG, "Handler - " + msg.what);
         }
     };
 

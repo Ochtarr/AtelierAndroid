@@ -142,6 +142,8 @@ public class Client extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST), Toast.LENGTH_SHORT).show();
                     break;
             }
+
+            Log.d(TAG, "Handler - " + msg.what);
         }
     };
 
