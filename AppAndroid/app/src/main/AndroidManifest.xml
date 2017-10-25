@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Server" />
-        <activity android:name=".Client"></activity>
+        <activity android:name=".Client" />
     </application>
 
 </manifest>
