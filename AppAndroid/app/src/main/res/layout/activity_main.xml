@@ -8,40 +8,65 @@
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp">
 
-    <TextView
-        android:id="@+id/lblChooseYourRole"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="@string/lblChooseYourRole"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/btServer"
-        android:layout_marginRight="8dp"
-        app:layout_constraintLeft_toRightOf="@+id/btClient"
-        android:layout_marginLeft="8dp" />
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
 
-    <Button
-        android:id="@+id/btClient"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btClient"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/lblChooseYourRole" />
+        <TextView
+            android:id="@+id/lblChooseYourRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/lblChooseYourRole"
+            app:layout_constraintLeft_toRightOf="@+id/btClient"
+            app:layout_constraintRight_toLeftOf="@+id/btServer"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btServer"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btServer"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/lblChooseYourRole" />
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="97dp"
+        tools:layout_width="match_parent">
+
+        <Button
+            android:id="@+id/btClient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="@string/btClient"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblChooseYourRole" />
+
+        <Button
+            android:id="@+id/btServer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:text="@string/btServer"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblChooseYourRole" />
+
+        <Button
+            android:id="@+id/btSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btSettings"
+            tools:layout_editor_absoluteX="148dp"
+            tools:layout_editor_absoluteY="129dp" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

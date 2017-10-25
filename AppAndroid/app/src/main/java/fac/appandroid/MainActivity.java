@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btServer;
     private Button btClient;
+    private Button btSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
         btClient = (Button) findViewById(R.id.btClient);
         btServer = (Button) findViewById(R.id.btServer);
+        btSettings = (Button) findViewById(R.id.btSettings);
 
         onClickBtClient();
         onClickBtServer();
+        onClickBtSettings();
     }
 
     @Override
@@ -80,6 +83,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(MainActivity.this, Server.class);
+                MainActivity.this.startActivity(myIntent);
+            }
+        });
+    }
+
+    private void onClickBtSettings() {
+        btSettings.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(MainActivity.this, Settings.class);
                 MainActivity.this.startActivity(myIntent);
             }
         });
