@@ -42,21 +42,29 @@ public class Client extends AppCompatActivity {
         btStart = (Button) findViewById(R.id.btStart);
         btStop = (Button) findViewById(R.id.btStop);
 
-        btStart.setEnabled(true);
-        btStop.setEnabled(false);
+        if (mBluetoothAdapter == null)
+        {
+            btStart.setEnabled(false);
+            btStop.setEnabled(false);
+        }
+        else
+        {
+            btStart.setEnabled(true);
+            btStop.setEnabled(false);
 
-        setBluetooth(true);
+            setBluetooth(true);
 
-        onClickBtStart();
-        onClickBtStop();
+            onClickBtStart();
+            onClickBtStop();
 
-        //setVisible();
-        listAllDevices(); //list All devices
+            //setVisible();
+            listAllDevices(); //list All devices
 
-        //quand on a choisis dans la liste des device .. on fait ça ? :
-        /*BluetoothDevice device = null;
-        Thread thread = new ConnectThread(device);
-        thread.start();*/
+            //quand on a choisis dans la liste des device .. on fait ça ? :
+            /*BluetoothDevice device = null;
+            Thread thread = new ConnectThread(device);
+            thread.start();*/
+        }
     }
 
     private void onClickBtStart() {

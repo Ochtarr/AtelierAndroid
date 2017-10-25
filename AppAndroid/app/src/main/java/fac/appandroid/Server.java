@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -27,6 +28,7 @@ public class Server extends AppCompatActivity {
 
     private Button btDownload;
     private ProgressBar pbDownload;
+    private TextView txtURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,7 @@ public class Server extends AppCompatActivity {
 
         btDownload = (Button) findViewById(R.id.btDownload);
         pbDownload = (ProgressBar) findViewById(R.id.pbDownload);
+        txtURL = (TextView) findViewById(R.id.txtURL);
 
         onClickBtDownload();
     }
@@ -47,8 +50,7 @@ public class Server extends AppCompatActivity {
 
                 pbDownload.setProgress(0);
 
-                //J'ai mis une image au pif sur google mais on s'en bat les couilles frère
-                String file_url = "http://media.rtl.fr/cache/rQwYMu3pakcZ6yEbvK84CA/880v587-0/online/image/2017/0630/7789172554_la-voie-lactee-au-dessus-de-siding-spring-en-australie.jpg";
+                String file_url = txtURL.getText().toString();
                 new DownloadFileFromURL().execute(file_url);
             }
         });
