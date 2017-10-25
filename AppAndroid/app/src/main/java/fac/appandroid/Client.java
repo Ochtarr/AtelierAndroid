@@ -58,7 +58,6 @@ public class Client extends AppCompatActivity {
             onClickBtStop();
 
             //setVisible();
-            listAllDevices(); //list All devices
 
             //quand on a choisis dans la liste des device .. on fait ça ? :
             /*BluetoothDevice device = null;
@@ -67,10 +66,40 @@ public class Client extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (mBluetoothAdapter != null)
+        {
+            setBluetooth(false);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            btStart.setEnabled(true);
+            btStop.setEnabled(false);
+
+            if (mBluetoothAdapter.isDiscovering()) {
+                mBluetoothAdapter.cancelDiscovery();
+            }
+
+            unregisterReceiver(mReceiver);
+        } catch (Exception e){
+
+        }
+    }
+
     private void onClickBtStart() {
         btStart.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                listAllDevices(); //list All devices
+
                 IntentFilter filter = new IntentFilter();
 
                 filter.addAction(BluetoothDevice.ACTION_FOUND);
@@ -117,28 +146,13 @@ public class Client extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onDestroy() {
-        try {
-            btStart.setEnabled(true);
-            btStop.setEnabled(false);
-
-            if (mBluetoothAdapter.isDiscovering()) {
-                mBluetoothAdapter.cancelDiscovery();
-            }
-
-            unregisterReceiver(mReceiver);
-
-            super.onDestroy();
-        } catch (Exception e){
-
-        }
-    }
-
     public void listAllDevices() {
+        devicesTxt.clear();
         devices = mBluetoothAdapter.getBondedDevices();
+
         for (BluetoothDevice blueDevice : devices) {
-            devicesTxt.add(blueDevice.getName());
+            String txtDevice = blueDevice.getName() + " - " + blueDevice.getAddress();
+            devicesTxt.add(txtDevice);
         }
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(Client.this, android.R.layout.simple_list_item_1, devicesTxt);
@@ -159,11 +173,11 @@ public class Client extends AppCompatActivity {
         }
     }
 
-    public void setVisible() {
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        startActivity(discoverableIntent);
-    }
+//    public void setVisible() {
+//        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+//        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+//        startActivity(discoverableIntent);
+//    }
 
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
