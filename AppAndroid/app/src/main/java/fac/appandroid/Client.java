@@ -65,6 +65,7 @@ public class Client extends AppCompatActivity {
     private Button btStart;
     private Button btStop;
     private Button btSend;
+    private Button btView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +77,14 @@ public class Client extends AppCompatActivity {
         btStart = (Button) findViewById(R.id.btStart);
         btStop = (Button) findViewById(R.id.btStop);
         btSend = (Button) findViewById(R.id.btSend);
+        btView = (Button) findViewById(R.id.btView);
 
         initBluetooth();
 
         onClickBtStart();
         onClickBtStop();
         onClickBtSend();
+        onClickBtView();
         onClickListDevice();
 
         userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
@@ -167,6 +170,7 @@ public class Client extends AppCompatActivity {
 
                     String name = new String(buffer, 0, msg.arg1);
 
+                    Bundle b = new Bundle()
                     if (name.substring(0, 4).equals("name")) {
                         nameFile = "/sdcard/" + name;
                         Toast.makeText(getApplicationContext(), nameFile, Toast.LENGTH_SHORT).show();
@@ -296,7 +300,23 @@ public class Client extends AppCompatActivity {
         });
     }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+    private void onClickBtView() {
+        btView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClickBtSend");
+                Intent intent = new Intent(Client.this, Player.class);
+                intent.putExtra("receivedFilePathName", nameFile);
+                startActivity(intent);
+            }
+        });
+    }
+
+
+
+
+                private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 

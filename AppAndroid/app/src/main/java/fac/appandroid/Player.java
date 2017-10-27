@@ -13,7 +13,7 @@ public class Player extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String receivedFilePathName = savedInstanceState.get("receivedFilePathName").toString();
+        String receivedFilePathName = (String) getIntent().getSerializableExtra("receivedFilePathName");
         setContentView(R.layout.activity_player);
 
         // Get a reference to the VideoView instance as follows, using the id we set in the XML layout.

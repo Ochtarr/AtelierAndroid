@@ -70,4 +70,13 @@
         app:layout_constraintRight_toLeftOf="@+id/btStop"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+    <Button
+        android:id="@+id/btView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="View"
+        app:layout_constraintTop_toBottomOf="@+id/listDevices"
+        tools:layout_editor_absoluteX="0dp" />
+
 </android.support.constraint.ConstraintLayout>
