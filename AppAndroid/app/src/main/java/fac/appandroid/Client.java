@@ -170,7 +170,6 @@ public class Client extends AppCompatActivity {
 
                     String name = new String(buffer, 0, msg.arg1);
 
-                    Bundle b = new Bundle()
                     if (name.substring(0, 4).equals("name")) {
                         nameFile = "/sdcard/" + name;
                         Toast.makeText(getApplicationContext(), nameFile, Toast.LENGTH_SHORT).show();
