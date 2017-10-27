@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,15 +60,6 @@ public class Server extends AppCompatActivity {
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
-//
-//    private AcceptThread mSecureAcceptThread;
-//    private int mState;
-//
-//    // Constants that indicate the current connection state
-//    public static final int STATE_NONE = 0;       // we're doing nothing
-//    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
-//    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
-//    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,9 +98,27 @@ public class Server extends AppCompatActivity {
 
             mService = new BluetoothService(this, mHandler);
             mService.start();
+        }
+    }
 
-//            mSecureAcceptThread = new AcceptThread(true);
-//            mSecureAcceptThread.start();
+    private void sendFile(byte[] buffer, String name) {
+        try {
+            // Input stream
+            File inputFile = new File(name);
+            InputStream input = new FileInputStream(inputFile);
+
+            int n;
+            while ((n=input.read(buffer))!=-1) {
+                //receiveFile(buffer, "/sdcard/esaluts.jpg");
+                mService.write(buffer);
+            }
+
+            for (byte bit : buffer) {
+                Log.d("file2", "\t" + bit);
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "sendFile - " + e.getMessage());
         }
     }
 
@@ -211,88 +222,6 @@ public class Server extends AppCompatActivity {
         });
     }
 
-//    private class AcceptThread extends Thread {
-//        // The local server socket
-//        private final BluetoothServerSocket mmServerSocket;
-//        private String mSocketType;
-//
-//        public AcceptThread(boolean secure) {
-//            BluetoothServerSocket tmp = null;
-//            mSocketType = secure ? "Secure" : "Insecure";
-//
-//            // Create a new listening server socket
-//            try {
-//                if (secure) {
-//                    tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord("Name", MY_UUID);
-//                } else {
-//                    tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("Name", MY_UUID);
-//                }
-//            } catch (IOException e) {
-//                Log.e(TAG, "Socket Type: " + mSocketType + "listen() failed", e);
-//            }
-//            mmServerSocket = tmp;
-//            mState = STATE_LISTEN;
-//        }
-//
-//        public void run() {
-//            Log.d(TAG, "Socket Type: " + mSocketType +
-//                    "BEGIN mAcceptThread" + this);
-//            setName("AcceptThread" + mSocketType);
-//
-//            BluetoothSocket socket = null;
-//
-//            // Listen to the server socket if we're not connected
-//            while (mState != STATE_CONNECTED) {
-//                try {
-//                    // This is a blocking call and will only return on a
-//                    // successful connection or an exception
-//                    socket = mmServerSocket.accept();
-//                } catch (IOException e) {
-//                    Log.e(TAG, "Socket Type: " + mSocketType + "accept() failed", e);
-//                    break;
-//                }
-//
-//                // If a connection was accepted
-//                if (socket != null) {
-//                    synchronized (Server.this) {
-//                        switch (mState) {
-//                            case STATE_LISTEN:
-//                                Log.d(TAG, "listen");
-//                            case STATE_CONNECTING:
-//                                // Situation normal. Start the connected thread.
-//                                /*connected(socket, socket.getRemoteDevice(),
-//                                        mSocketType);*/
-//                                Log.d(TAG, "situation normale");
-//
-//                                break;
-//                            case STATE_NONE:
-//                                Log.d(TAG, "none");
-//                            case STATE_CONNECTED:
-//                                // Either not ready or already connected. Terminate new socket.
-//                                try {
-//                                    socket.close();
-//                                } catch (IOException e) {
-//                                    Log.e(TAG, "Could not close unwanted socket", e);
-//                                }
-//                                break;
-//                        }
-//                    }
-//                }
-//            }
-//            Log.i(TAG, "END mAcceptThread, socket Type: " + mSocketType);
-//
-//        }
-//
-//        public void cancel() {
-//            Log.d(TAG, "Socket Type" + mSocketType + "cancel " + this);
-//            try {
-//                mmServerSocket.close();
-//            } catch (IOException e) {
-//                Log.e(TAG, "Socket Type" + mSocketType + "close() of server failed", e);
-//            }
-//        }
-//    }
-//
     private class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
         protected void onPreExecute() {
@@ -333,6 +262,14 @@ public class Server extends AppCompatActivity {
                 // closing streams
                 output.close();
                 input.close();
+
+                String message = "namesalope.jpg";
+                byte[] send = message.getBytes();
+                mService.write(send);
+
+                //une fois téléchargé on envoie au client le fichier
+                byte[] buffer = new byte[32];
+                sendFile(buffer, "/sdcard/enculer.jpg");
 
             } catch (Exception e) {
                 Log.e("Error: ", e.getMessage());

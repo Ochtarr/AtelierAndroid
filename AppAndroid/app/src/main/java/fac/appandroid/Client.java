@@ -19,6 +19,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -41,11 +44,14 @@ public class Client extends AppCompatActivity {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
+    public static final int FILE_RECEIVE = 6;
 
 
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
+
+    String nameFile = "";
 
     //for bluetooth
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -80,7 +86,6 @@ public class Client extends AppCompatActivity {
 
         userPrefOnClient = getSharedPreferences(prefName, Context.MODE_PRIVATE);
         //Set<String> listDevicesSaved = userPrefOnClient.getStringSet("listBluetoohDevices", null);
-
     }
 
     private void onClickListDevice() {
@@ -117,6 +122,28 @@ public class Client extends AppCompatActivity {
         }
     }
 
+    private void receiveFile(byte[] buffer, String name) {
+        try {
+            // Output stream
+            File outputFile = new File(name);
+            OutputStream output = new FileOutputStream(outputFile, true);
+
+            long lenghtOfFileOuput = outputFile.length();
+
+            output.write(buffer);
+            output.flush();
+            output.close();
+
+            Log.d("file", "lenght : " + lenghtOfFileOuput);
+            for (byte bit : buffer) {
+                Log.d("file", "\t" + bit);
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "receiveFile - " + e.getMessage());
+        }
+    }
+
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -131,7 +158,24 @@ public class Client extends AppCompatActivity {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
+
                     Toast.makeText(getApplicationContext(), readMessage, Toast.LENGTH_SHORT).show();
+                    break;
+                case FILE_RECEIVE:
+                    byte[] buffer = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+
+                    String name = new String(buffer, 0, msg.arg1);
+
+                    if (name.substring(0, 4).equals("name")) {
+                        nameFile = "/sdcard/" + name;
+                        Toast.makeText(getApplicationContext(), nameFile, Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        receiveFile(buffer, nameFile);
+                    }
+
                     break;
                 case MESSAGE_DEVICE_NAME:
                     // save the connected device's name
