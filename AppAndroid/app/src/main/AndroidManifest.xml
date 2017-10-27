@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fac.appandroid">
+    package="fac.appandroid"> <!-- min 21 because of settings activity -> getAllNetworks -->
+    <uses-sdk
+        android:maxSdkVersion="26"
+        android:minSdkVersion="21"
+        android:targetSdkVersion="26" />
 
     <!-- Permission: Allow Connect to Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,13 +18,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- Permission: Settings Connections -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- min 21 because of settings activity -> getAllNetworks -->
-    <uses-sdk
-        android:minSdkVersion="21"
-        android:targetSdkVersion="26"
-        android:maxSdkVersion="26"
-    />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -32,19 +31,20 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".Server" >
+        <activity android:name=".Server">
             <intent-filter>
                 <action android:name="android.intent.action.MANAGE_NETWORK_USAGE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity android:name=".Client" />
         <activity android:name=".Settings" />
-
+        <activity android:name=".Player"></activity>
     </application>
+
 </manifest>

@@ -71,6 +71,8 @@ public class Server extends AppCompatActivity {
         pbDownload = (ProgressBar) findViewById(R.id.pbDownload);
         txtURL = (TextView) findViewById(R.id.txtURL);
 
+        btDownload.setEnabled(false);
+
         userPrefOnServer = getSharedPreferences(prefName, Context.MODE_PRIVATE);
         txtURL.setText(userPrefOnServer.getString("url", ""));
 
@@ -109,7 +111,6 @@ public class Server extends AppCompatActivity {
 
             int n;
             while ((n=input.read(buffer))!=-1) {
-                //receiveFile(buffer, "/sdcard/esaluts.jpg");
                 mService.write(buffer);
             }
 
@@ -141,6 +142,7 @@ public class Server extends AppCompatActivity {
                 case MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     Toast.makeText(getApplicationContext(), "Connected to " + msg.getData().getString(DEVICE_NAME), Toast.LENGTH_SHORT).show();
+                    btDownload.setEnabled(true);
                     break;
                 case MESSAGE_TOAST:
                     Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST), Toast.LENGTH_SHORT).show();

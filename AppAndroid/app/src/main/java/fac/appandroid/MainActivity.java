@@ -76,59 +76,12 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-//    private void sendFile(byte[] buffer, String name) {
-//        try {
-//            // Input stream
-//            File inputFile = new File(name);
-//            InputStream input = new FileInputStream(inputFile);
-//
-//            int n;
-//            while ((n=input.read(buffer))!=-1) {
-//                receiveFile(buffer, "/sdcard/esaluts.jpg");
-//                //send by bluetooth : buffer
-//            }
-//
-////            for (byte bit : buffer) {
-////                Log.d("file2", "\t" + bit);
-////            }
-//
-//        } catch (Exception e) {
-//            Log.e(TAG, "sendFile - " + e.getMessage());
-//        }
-//    }
-
-//    private void receiveFile(byte[] buffer, String name) {
-//        try {
-//            // Output stream
-//            File outputFile = new File(name);
-//            OutputStream output = new FileOutputStream(outputFile, true);
-//
-//            long lenghtOfFileOuput = outputFile.length();
-//
-//            output.write(buffer);
-//            output.flush();
-//            output.close();
-//
-////            Log.d("file", "lenght : " + lenghtOfFileOuput);
-////            for (byte bit : buffer) {
-////                Log.d("file", "\t" + bit);
-////            }
-//
-//        } catch (Exception e) {
-//            Log.e(TAG, "receiveFile - " + e.getMessage());
-//        }
-//    }
-
     private void onClickBtClient() {
         btClient.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(MainActivity.this, Client.class);
                 MainActivity.this.startActivity(myIntent);
-
-//                byte[] buffer = new byte[32];
-
-//                sendFile(buffer, "/sdcard/enculer.jpg");
             }
         });
     }
