@@ -60,6 +60,8 @@ public class Server extends AppCompatActivity {
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
+    private StringBuffer mOutStringBuffer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,7 @@ public class Server extends AppCompatActivity {
             }
 
             mService = new BluetoothService(this, mHandler);
+            mOutStringBuffer = new StringBuffer("");
             mService.start();
         }
     }
@@ -112,6 +115,9 @@ public class Server extends AppCompatActivity {
             int n;
             while ((n=input.read(buffer))!=-1) {
                 mService.write(buffer);
+                mOutStringBuffer = new StringBuffer("");
+                mOutStringBuffer.setLength(0);
+                buffer = new byte[1024];
             }
 
             for (byte bit : buffer) {
@@ -244,7 +250,7 @@ public class Server extends AppCompatActivity {
                 InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
                 // Output stream
-                OutputStream output = new FileOutputStream("/sdcard/enculer.jpg");
+                OutputStream output = new FileOutputStream("/sdcard/link.mp4");
 
                 byte data[] = new byte[1024];
 
@@ -265,13 +271,24 @@ public class Server extends AppCompatActivity {
                 output.close();
                 input.close();
 
-                String message = "namesalope.jpg";
-                byte[] send = message.getBytes();
-                mService.write(send);
+                File inputFile = new File("/sdcard/link.mp4");
 
-                //une fois téléchargé on envoie au client le fichier
-                byte[] buffer = new byte[32];
-                sendFile(buffer, "/sdcard/enculer.jpg");
+                String size = "size" + inputFile.length();
+                byte[] sendSize = size.getBytes();
+                mService.write(sendSize);
+                mOutStringBuffer = new StringBuffer("");
+                mOutStringBuffer.setLength(0);
+
+                byte[] buffer = new byte[1024];
+                sendFile(buffer, "/sdcard/link.mp4");
+
+                String end = "end!";
+                byte[] sendEnd = size.getBytes();
+                mService.write(sendEnd);
+                mOutStringBuffer = new StringBuffer("");
+                mOutStringBuffer.setLength(0);
+
+                Toast.makeText(getApplicationContext(), "File sended", Toast.LENGTH_SHORT).show();
 
             } catch (Exception e) {
                 Log.e("Error: ", e.getMessage());

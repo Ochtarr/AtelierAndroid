@@ -204,6 +204,8 @@ public class BluetoothService {
         }
         // Perform the write unsynchronized
         r.write(out);
+
+        out = null;
     }
 
     /**
@@ -400,7 +402,7 @@ public class BluetoothService {
         }
 
         public void run() {
-            byte[] buffer = new byte[32];
+            byte[] buffer = new byte[1024];
             int bytes;
             // Keep listening to the InputStream while connected
             while (true) {
@@ -409,8 +411,11 @@ public class BluetoothService {
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI Activity
 
+
                     mHandler.obtainMessage(Client.FILE_RECEIVE, bytes, -1, buffer)
                             .sendToTarget();
+
+                    buffer = new byte[1024];
                 } catch (IOException e) {
                     connectionLost();
                     break;
@@ -429,8 +434,9 @@ public class BluetoothService {
                 // Share the sent message back to the UI Activity
                 mHandler.obtainMessage(Client.MESSAGE_WRITE, -1, -1, buffer)
                         .sendToTarget();
-                mHandler.obtainMessage(Server.MESSAGE_WRITE, -1, -1, buffer)
-                        .sendToTarget();
+                buffer = null;
+//                mHandler.obtainMessage(Server.MESSAGE_WRITE, -1, -1, buffer)
+//                        .sendToTarget();
             } catch (IOException e) {
             }
         }

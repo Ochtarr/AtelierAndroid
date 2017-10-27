@@ -51,7 +51,9 @@ public class Client extends AppCompatActivity {
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
 
-    String nameFile = "";
+    public String nameFile = "";
+    public long sizeFile = 0;
+    public long totalSize = 0;
 
     //for bluetooth
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -122,22 +124,39 @@ public class Client extends AppCompatActivity {
         }
     }
 
-    private void receiveFile(byte[] buffer, String name) {
+    public void receiveFile(byte[] buffer, String name) {
         try {
+            int i = 0;
             // Output stream
             File outputFile = new File(name);
             OutputStream output = new FileOutputStream(outputFile, true);
 
             long lenghtOfFileOuput = outputFile.length();
 
-            output.write(buffer);
+
+
+            Log.d(TAG, "lenght : " + lenghtOfFileOuput);
+
+            for (byte bit : buffer)
+            {
+                totalSize = totalSize + 1;
+
+                if (totalSize <= sizeFile + 1) {
+
+                    output.write(bit);
+
+                    i = i + 1;
+
+                    //Log.d(TAG, "i [" + i + "] - totalsize [" + totalSize + "] - sizefile[" + sizeFile + "]");
+                }
+                else
+                {
+                    Log.d(TAG, "taille dépassée [" + totalSize + "] - [" + sizeFile + "]");
+                }
+            }
+
             output.flush();
             output.close();
-
-            Log.d("file", "lenght : " + lenghtOfFileOuput);
-            for (byte bit : buffer) {
-                Log.d("file", "\t" + bit);
-            }
 
         } catch (Exception e) {
             Log.e(TAG, "receiveFile - " + e.getMessage());
@@ -165,15 +184,21 @@ public class Client extends AppCompatActivity {
                     byte[] buffer = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
 
-                    String name = new String(buffer, 0, msg.arg1);
+                    String data = new String(buffer, 0, msg.arg1);
 
-                    if (name.substring(0, 4).equals("name")) {
-                        nameFile = "/sdcard/" + name;
-                        Toast.makeText(getApplicationContext(), nameFile, Toast.LENGTH_SHORT).show();
+                    if (data.substring(0, 4).equals("size")) {
+                        sizeFile =  Long.parseLong(data.substring(4, data.length()));
+                        Log.d(TAG, "taille = " + sizeFile);
+                    }
+                    else if (data.substring(0, 4).equals("end!")) {
+                        Log.d(TAG, "END");
+
+                        Intent myIntent = new Intent(Client.this, Player.class);
+                        Client.this.startActivity(myIntent);
                     }
                     else
                     {
-                        receiveFile(buffer, nameFile);
+                        receiveFile(buffer, "/sdcard/video_tmp.mp4");
                     }
 
                     break;
